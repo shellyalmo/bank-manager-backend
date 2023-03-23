@@ -5,6 +5,7 @@ import {
   createUser,
   deleteUser,
   getUserBy,
+  updateBalance,
 } from "../controllers/usersController.js";
 
 // Include other resource routers
@@ -17,6 +18,8 @@ router
   .post(createUser);
 
 router.route("/getUserBy").get(getUserBy);
+router.route("/updateBalance/:id").put(updateBalance);
+
 router.route("/:id").get(getUser).delete(deleteUser);
 
 // .get(getShop).put(updateShop)

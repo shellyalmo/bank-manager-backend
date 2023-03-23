@@ -62,24 +62,27 @@ export const getUserBy = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Update a Shop
-// @route   PUT /api/v1/shops/:id
-// @access  Private
-export const updateShop = asyncHandler(async (req, res, next) => {
-  const shop = await Shop.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!shop) {
+// @desc    update a user cash
+// @route   GET /api/v1/users/updateCash/:id
+export const updateBalance = asyncHandler(async (req, res, next) => {
+  const userId = req.params.id;
+  const { credit = 0, cash = 0 } = req.body;
+  console.log(userId);
+  const user = await User.findByIdAndUpdate(
+    { _id: userId },
+    { $inc: { cash: cash, credit: credit } },
+    { new: true }
+  );
+  console.log(user);
+  if (!user) {
     return next(
-      new Error(`Shop that end with '${req.params.id.slice(-6)}' not found`)
+      new ErrorResponse(`User that ends with '${userId}' was not found`, 404)
     );
   }
 
   res.status(200).json({
     success: true,
-    data: shop,
+    data: `Balance was Changed`,
   });
 });
 
