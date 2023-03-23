@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema(
     slug: String,
     email: {
       type: String,
+      unique: [true, "email already exists"],
       match: [
         /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
         "Please add a valid email",
@@ -21,12 +22,8 @@ const UserSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    accounts: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Account",
-      },
-    ],
+    cash: { type: Number, default: 0 },
+    credit: { type: Number, default: 0, min: [0, "Credit cannot be negative"] },
   },
   {
     toJSON: {
@@ -54,25 +51,6 @@ const UserSchema = new mongoose.Schema(
 UserSchema.pre("save", function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
-});
-
-// Cascade delete account when a user is deleted
-UserSchema.pre(
-  "deleteOne",
-  { document: true, query: false },
-  async function (next) {
-    console.log(`Account being removed from user ${this._id}`);
-    await this.model("Account").deleteMany({ user: this._id });
-    next();
-  }
-);
-
-// Reverse populate with virtuals
-UserSchema.virtual("accounts", {
-  ref: "Account",
-  localField: "_id",
-  foreignField: "user",
-  justOne: false,
 });
 
 export default mongoose.model("User", UserSchema);

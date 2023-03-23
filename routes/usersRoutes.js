@@ -1,7 +1,11 @@
 import express from "express";
-import { getUsers, createUser } from "../controllers/usersController.js";
-// import advancedResults from "../middleware/advancedResults.js";
-// import User from "../models/User.js";
+import {
+  getUsers,
+  getUser,
+  createUser,
+  deleteUser,
+  getUserBy,
+} from "../controllers/usersController.js";
 
 // Include other resource routers
 const router = express.Router();
@@ -12,6 +16,8 @@ router
   .get(getUsers)
   .post(createUser);
 
-router.route("/:id").get(getShop).put(updateShop).delete(deleteShop);
+router.route("/getUserBy").get(getUserBy);
+router.route("/:id").get(getUser).delete(deleteUser);
 
+// .get(getShop).put(updateShop)
 export default router;
