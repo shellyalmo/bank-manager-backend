@@ -75,6 +75,9 @@ export const deleteAccount = asyncHandler(async (req, res, next) => {
   );
 
   await account.deleteOne(); // delete the account document
+
+  await Account.getTotalBalance(account.owner);
+
   res.status(200).json({
     success: true,
     data: `Account with ID: '${accountToRemoveId}' was deleted`,
@@ -130,6 +133,7 @@ export const updateBalance = asyncHandler(async (req, res, next) => {
     );
   }
 
+  await Account.getTotalBalance(account.owner);
   res.status(200).json({
     success: true,
     data: `Balance was Changed`,
