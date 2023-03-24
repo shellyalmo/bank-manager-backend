@@ -62,18 +62,23 @@ export const getUserBy = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    update a user cash
-// @route   GET /api/v1/users/updateCash/:id
+// @desc    update a user balance
+// @route   GET /api/v1/users/updateBalance/:id
 export const updateBalance = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
   const { credit = 0, cash = 0 } = req.body;
-  console.log(userId);
-  const user = await User.findByIdAndUpdate(
+
+  const { credit: prevCredit, cash: prevCash } = await User.findById(userId);
+  if (!prevCredit || !prevCash) {
+    new ErrorResponse(`User that ends with '${userId}' was not found`, 404);
+  }
+
+  // runValidators will not work with $inc
+  const user = await User.findOneAndUpdate(
     { _id: userId },
-    { $inc: { cash: cash, credit: credit } },
-    { new: true }
+    { credit: credit + prevCredit, cash: cash + prevCash },
+    { new: true, runValidators: true }
   );
-  console.log(user);
   if (!user) {
     return next(
       new ErrorResponse(`User that ends with '${userId}' was not found`, 404)
