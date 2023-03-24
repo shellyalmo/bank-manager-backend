@@ -100,7 +100,7 @@ export const getAccount = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    update a account cash
-// @route   GET /api/v1/accounts/updateBalance/:id
+// @route   put /api/v1/accounts/updateBalance/:id
 export const updateBalance = asyncHandler(async (req, res, next) => {
   const accountId = req.params.id;
   const { credit = 0, cash = 0 } = req.body;
