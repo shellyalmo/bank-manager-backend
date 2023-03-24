@@ -7,7 +7,9 @@ import Account from "../models/Account.js";
 // @route   GET /api/v1/users
 // @access  Public
 export const getUsers = asyncHandler(async (req, res, next) => {
-  const users = await User.find();
+  const users = await User.find().populate({
+    path: "accounts",
+  });
   res.status(200).json({ data: users });
 });
 
