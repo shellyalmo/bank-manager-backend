@@ -1,8 +1,14 @@
 # Dependencies
+node_modules/
 /node_modules
+.pnp.js
+.history
 
 # Build/Production
 /client/build
+
+# Testing & Coverage
+/coverage
 
 # Environment variables
 *.env*
@@ -22,6 +28,7 @@
 
 # Temporary files
 *.sw?
+*.lock
 *.cache
 .DS_Store
 
