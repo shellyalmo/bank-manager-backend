@@ -18,16 +18,15 @@ export const getAccounts = asyncHandler(async (req, res, next) => {
 // @route   POST /api/v1/Accounts
 export const createAccount = asyncHandler(async (req, res, next) => {
   const { passportID } = req.body;
+
   let user = await User.findOne({ passportID });
   if (!user) {
     return next(
-      new ErrorResponse(
-        `Account with passportID  '${passportID}' was not found`,
-        404
-      )
+      new ErrorResponse(`Account that  with '${passportID}' was not found`, 404)
     );
   }
   const account = await Account.create({ owner: user._id });
+
   user = await User.findByIdAndUpdate(
     user._id,
     {
@@ -35,6 +34,7 @@ export const createAccount = asyncHandler(async (req, res, next) => {
     },
     { new: true }
   );
+
   res.status(200).json({
     success: true,
     data: `Account with id ending ...${account.id.slice(
@@ -43,28 +43,43 @@ export const createAccount = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Delete an account
+// @desc    Delete a account
 // @route   DELETE /api/v1/accounts/:id
 export const deleteAccount = asyncHandler(async (req, res, next) => {
-  const account = await Account.findById(req.params.id);
+  const accountToRemoveId = req.params.id;
+  const account = await Account.findById(accountToRemoveId);
   if (!account) {
     return next(
       new ErrorResponse(
-        `Account that ends with '${req.params.id.slice(-6)}' was not found`,
+        `Account that ends with '${accountToRemoveId.slice(-6)}' was not found`,
         404
       )
     );
   }
-  const accountEmail = account.email;
+  let user = await User.findById(account.owner);
+  if (user.accounts.length === 1) {
+    return next(
+      new ErrorResponse(
+        `Account that ends with '${accountToRemoveId.slice(
+          -6
+        )}' cannot be deleted - user only has this account`,
+        403
+      )
+    );
+  }
 
-  account.deleteOne();
+  const updatedUser = await User.findByIdAndUpdate(
+    account.owner,
+    { $pull: { accounts: accountToRemoveId } },
+    { new: true }
+  );
 
+  await account.deleteOne(); // delete the account document
   res.status(200).json({
     success: true,
-    data: `Account with email: '${accountEmail}' was deleted`,
+    data: `Account with ID: '${accountToRemoveId}' was deleted`,
   });
 });
-
 // @desc    get a account
 // @route   GET /api/v1/accounts/:id
 export const getAccount = asyncHandler(async (req, res, next) => {
