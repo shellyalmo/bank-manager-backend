@@ -11,9 +11,9 @@
 	"author": "Shelly Almoznino",
 	"license": "MIT",
 	"devDependencies": {
-		"colors": "^1.4.0"
 	},
 	"dependencies": {
+		"colors": "^1.4.0",
 		"dotenv": "^16.0.3",
 		"express": "^4.18.2",
 		"mongoose": "^7.0.2",
