@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import colors from "colors";
 import morgan from "morgan";
+import cors from "cors";
 
 import accounts from "./routes/accountsRoutes.js";
 import users from "./routes/usersRoutes.js";
@@ -31,6 +32,8 @@ const app = express();
 
 // Body parser middleware
 app.use(express.json());
+// CORS middleware
+app.use(cors());
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
