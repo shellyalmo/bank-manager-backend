@@ -12,7 +12,20 @@ import connectDB from "./config/db.js";
 
 dotenv.config({ path: "./config/config.env" });
 
-connectDB();
+connectDB().then(() => {
+  const server = app.listen(
+    PORT,
+    console.log(
+      `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow
+        .bold
+    )
+  );
+  // Handle unhandled promise rejections
+  process.on("unhandledRejection", (err, promise) => {
+    console.log(`Error: ${err.message}`.red);
+    server.close(() => process.exit(1));
+  });
+});
 
 const app = express();
 
@@ -30,17 +43,3 @@ app.use("/api/v1/users", users);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
-
-const server = app.listen(
-  PORT,
-  console.log(
-    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`.yellow
-      .bold
-  )
-);
-
-// Handle unhandled promise rejections
-process.on("unhandledRejection", (err, promise) => {
-  console.log(`Error: ${err.message}`.red);
-  server.close(() => process.exit(1));
-});
